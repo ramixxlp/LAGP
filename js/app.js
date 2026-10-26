@@ -82,10 +82,10 @@ const DATA_FILE = 'data/fielddata01.geojson';
 // The material types and their colours, in the order the buttons appear.
 // "darkText: true" means the button uses black text, because the colour is light.
 // To add a new material, add a line here. It will then appear as a button automatically.
-// "edge" gives the button an outline in another colour, for colours that would disappear on the black sidebar.
 // The "Type" in the data is matched without caring about capitals: "3d model" → "3D model".
-// Colours from the project palette (coolors.co/4560a6-fecd24-3c281f-006d4f-c78b88-000000-afb8c9-143796-c42e2d-834c3d).
-// The palette has 10 colours for 12 types, so Sample and Map use lighter tints of palette colours.
+// Colours from the project palette: 4560a6 fecd24 3c281f 006d4f c78b88 afb8c9 143796 c42e2d 834c3d.
+// The palette has 9 colours for 12 types, so three pairs of related types share a colour:
+// Sketch with Drawing, Map with Fieldnotes, and Archival with Other.
 const MATERIALS = {
     Photography: { color: '#006d4f' },
     Video:       { color: '#fecd24', darkText: true },
@@ -93,18 +93,17 @@ const MATERIALS = {
     Drawing:     { color: '#834c3d' },
     Fieldnotes:  { color: '#143796' },
     '3D model':  { color: '#4560a6' },   // quotes because the name starts with a number and has a space
-    Sketch:      { color: '#c78b88', darkText: true },
-    Archival:    { color: '#000000', edge: '#8a8a8a' },
+    Sketch:      { color: '#834c3d' },   // same as Drawing
+    Archival:    { color: '#3c281f' },   // same as Other
     Material:    { color: '#afb8c9', darkText: true },
-    Sample:      { color: '#66a795', darkText: true },   // a lighter tint of the Photography green
-    Map:         { color: '#fee592', darkText: true },   // a lighter tint of the Video yellow
-    Other:       { color: '#3c281f', edge: '#5a4a42' }
+    Sample:      { color: '#c78b88', darkText: true },
+    Map:         { color: '#143796' },   // same as Fieldnotes
+    Other:       { color: '#3c281f' }
 };
 
-// The style for anything coloured by its material (buttons, cards): "--c:#006d4f; --edge:#006d4f"
+// The style for anything coloured by its material (buttons, cards): "--c:#006d4f"
 function materialStyle(name) {
-    const material = MATERIALS[name];
-    return '--c:' + material.color + '; --edge:' + (material.edge || material.color);
+    return '--c:' + MATERIALS[name].color;
 }
 
 // The columns of the data file, and the short names the code uses for them.

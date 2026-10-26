@@ -212,7 +212,7 @@ button {
     padding: 8px 10px;
     font-size: 18px;
     background: var(--c);
-    border: 1px solid var(--edge, var(--c));   /* the outline: "edge" if the material has one, otherwise its colour */
+    border: 1px solid var(--c);
     transition: background .15s, color .15s, opacity .15s;   /* fade changes over 0.15 seconds */
 }
 
@@ -760,7 +760,7 @@ body.detail-open .tabs {
     aspect-ratio: 4 / 3;
     position: relative;
     background: color-mix(in srgb, var(--c) 30%, #0b0b0b);   /* the material colour, darkened */
-    border-color: var(--edge, var(--c));
+    border-color: var(--c);
     color: #ddd;
 }
 
