@@ -82,17 +82,30 @@ const DATA_FILE = 'data/fielddata01.geojson';
 // The material types and their colours, in the order the buttons appear.
 // "darkText: true" means the button uses black text, because the colour is light.
 // To add a new material, add a line here. It will then appear as a button automatically.
+// "edge" gives the button an outline in another colour, for colours that would disappear on the black sidebar.
 // The "Type" in the data is matched without caring about capitals: "3d model" → "3D model".
+// Colours from the project palette (coolors.co/4560a6-fecd24-3c281f-006d4f-c78b88-000000-afb8c9-143796-c42e2d-834c3d).
+// The palette has 10 colours for 12 types, so Sample and Map use lighter tints of palette colours.
 const MATERIALS = {
-    Photography: { color: '#3e7a55' },
-    Audio:       { color: '#bf3b31' },
-    Sample:      { color: '#b07a3a' },
-    '3D model':  { color: '#6a55a8' },   // quotes because the name starts with a number and has a space
-    Drawing:     { color: '#7c4b3c' },
-    Video:       { color: '#f0c93b', darkText: true },
-    Fieldnotes:  { color: '#27359a' },
-    Other:       { color: '#3d2c24' }
+    Photography: { color: '#006d4f' },
+    Video:       { color: '#fecd24', darkText: true },
+    Audio:       { color: '#c42e2d' },
+    Drawing:     { color: '#834c3d' },
+    Fieldnotes:  { color: '#143796' },
+    '3D model':  { color: '#4560a6' },   // quotes because the name starts with a number and has a space
+    Sketch:      { color: '#c78b88', darkText: true },
+    Archival:    { color: '#000000', edge: '#8a8a8a' },
+    Material:    { color: '#afb8c9', darkText: true },
+    Sample:      { color: '#66a795', darkText: true },   // a lighter tint of the Photography green
+    Map:         { color: '#fee592', darkText: true },   // a lighter tint of the Video yellow
+    Other:       { color: '#3c281f', edge: '#5a4a42' }
 };
+
+// The style for anything coloured by its material (buttons, cards): "--c:#006d4f; --edge:#006d4f"
+function materialStyle(name) {
+    const material = MATERIALS[name];
+    return '--c:' + material.color + '; --edge:' + (material.edge || material.color);
+}
 
 // The columns of the data file, and the short names the code uses for them.
 // The data comes from a spreadsheet whose column headers also contain instructions, like
@@ -804,7 +817,7 @@ function drawMaterialButtons() {
         }
 
         html += `
-            <button type="button" class="${classes}" style="--c:${material.color}"
+            <button type="button" class="${classes}" style="${materialStyle(name)}"
                     data-material="${name}" aria-pressed="${isOn}">
                 ${name}<span class="count">${counts[name] || 0}</span>
             </button>`;
@@ -1020,7 +1033,7 @@ function selectEntry(id, options) {
             <div class="pop">
                 <div class="pop-body">
                     <button type="button" class="pop-close" aria-label="Close">&times;</button>
-                    <span class="${chipClasses}" style="--c:${material.color}">${entry.material}</span>
+                    <span class="${chipClasses}" style="${materialStyle(entry.material)}">${entry.material}</span>
                     <div class="pop-title">${escapeHtml(entry.title)}</div>
                     <div class="meta">${escapeHtml(entry.summary)}</div>
                 </div>
@@ -1149,7 +1162,7 @@ function openDetailPanel(id) {
             </div>
         </div>
 
-        <span class="${chipClasses}" style="--c:${material.color}">${entry.material}</span>
+        <span class="${chipClasses}" style="${materialStyle(entry.material)}">${entry.material}</span>
         <h2>${escapeHtml(entry.title)}</h2>
         <div class="meta">${escapeHtml(entry.reference)}</div>
 
@@ -1305,7 +1318,7 @@ function drawGrid() {
         }
 
         cards += `
-            <button type="button" class="card" data-id="${entry.id}" style="--c:${MATERIALS[entry.material].color}">
+            <button type="button" class="card" data-id="${entry.id}" style="${materialStyle(entry.material)}">
                 <div class="media">${mediaHtml}</div>
                 <div class="entry-title">${escapeHtml(entry.title)}</div>
                 <div class="entry-meta">${escapeHtml(entry.summary)}</div>
