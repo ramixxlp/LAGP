@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<!--
+    =====================================================================
+    FIELDARCHIVES 0.1 — START HERE
+    =====================================================================
+
+    This website is made of three main files that work together:
+
+      index.html      (this file)  → WHAT is on the page.
+                                     The structure: sidebar, buttons, map area…
+      css/style.css                → HOW it looks.
+                                     Colours, sizes, fonts, spacing.
+      js/app.js                    → WHAT it does.
+                                     Loads the data, draws the map, reacts to clicks.
+
+    Other folders:
+      data/    → the fieldwork entries (a GeoJSON file: points with information)
+      assets/  → images, such as the logo
+      fonts/   → the Axo font used for all the text
+
+    HOW TO OPEN THE SITE
+    The page loads its data from a file, and browsers block that when you
+    simply double-click index.html. Instead, start a small local server:
+      1. Open the Terminal in this "code" folder.
+      2. Type:  python3 -m http.server
+      3. Go to  http://localhost:8000  in your browser.
+
+    HOW TO READ HTML
+    HTML is made of "tags" written like <tagname> … </tagname>.
+    Tags can sit inside other tags, like boxes inside boxes.
+    Inside a tag you can add "attributes", for example:
+        <button id="about" class="btn">About</button>
+          - id     → a unique name, so the JavaScript can find this element.
+          - class  → a style name, so the CSS knows how to style it.
+    Text inside a comment block, like this one, is ignored by the browser.
+    It's only there for people reading the code. A comment block opens
+    with a less-than sign, an exclamation mark and two dashes, and closes
+    with two dashes and a greater-than sign (see the first and last lines
+    of this block).
+    =====================================================================
+-->
+<html lang="en">
+
+<!-- ===== HEAD: invisible set-up information for the browser ===== -->
+<head>
+    <!-- Use the standard character set, so accents and symbols (é, °, →) display correctly -->
+    <meta charset="utf-8">
+
+    <!-- The text shown in the browser tab -->
+    <title>Fieldarchives 0.1</title>
+
+    <!-- Makes the page fit the width of phones and tablets -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Tells the browser to start downloading our font early, so text appears in Axo straight away -->
+    <link rel="preload" href="fonts/Axo-Book.otf" as="font" type="font/otf" crossorigin>
+
+    <!-- Mapbox: the external library that draws the interactive map.
+         The first line loads its styles, the second line (further down) loads its code. -->
+    <link href="https://api.mapbox.com/mapbox-gl-js/v3.32.0/mapbox-gl.css" rel="stylesheet">
+
+    <!-- Our own styles (colours, layout, fonts) -->
+    <link href="css/style.css" rel="stylesheet">
+
+    <!-- The Mapbox code. This must load BEFORE our own app.js, which uses it. -->
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.32.0/mapbox-gl.js"></script>
+</head>
+
+<!-- ===== BODY: everything visible on the page ===== -->
+<body>
+
+<!-- The whole app. The CSS places the sidebar on the left and the map on the right. -->
+<div class="app">
+
+    <!-- =========================================================
+         LEFT SIDEBAR: logo, search, filters and the list of entries
+         ========================================================= -->
+    <aside class="sidebar" id="sidebar">
+
+        <!-- Logo and project name -->
+        <header class="brand">
+            <!-- alt="" because the logo is decorative: the title next to it already says the name -->
+            <img class="brand-logo" src="assets/logo.png" alt="">
+            <!-- <br> forces a line break -->
+            <h1>Fieldarchives<br>0.1</h1>
+        </header>
+
+        <!-- Search and filters -->
+        <section class="filters">
+
+            <!-- Search box. The JavaScript watches what is typed here. -->
+            <input type="search" id="search" class="search" placeholder="Search places, authors, keywords" autocomplete="off">
+
+            <!-- Small heading "MATERIAL" with a "show all" button on the right -->
+            <div class="section-label">
+                <span>Material</span>
+                <button type="button" class="link" id="show-all">show all</button>
+            </div>
+
+            <!-- The coloured material buttons (Photography, Drawing…).
+                 It's empty here: the JavaScript creates the buttons from the data. -->
+            <div class="chips" id="chips"></div>
+
+            <!-- Dropdown menus. The first <option> is the label shown when nothing is chosen.
+                 The JavaScript adds the other options (places, years, topics…) from the data.
+                 Each id must also be listed in DROPDOWNS in js/app.js. -->
+            <div class="selects">
+                <label class="select"><select id="f-site" aria-label="Site"><option value="">Site</option></select></label>
+                <label class="select"><select id="f-year" aria-label="Year"><option value="">Year</option></select></label>
+                <label class="select"><select id="f-topic" aria-label="Topic"><option value="">Topic</option></select></label>
+                <label class="select"><select id="f-author" aria-label="Author"><option value="">Author</option></select></label>
+                <label class="select"><select id="f-scale" aria-label="Scale"><option value="">Scale</option></select></label>
+            </div>
+        </section>
+
+        <!-- List of the entries visible on the map -->
+        <section class="entries">
+            <!-- "15 ENTRIES IN VIEW": the JavaScript replaces "Loading…" with the real number -->
+            <div class="section-label"><span id="entries-count">Loading…</span></div>
+            <!-- <ul> is a list. The JavaScript fills it with one <li> (list item) per entry. -->
+            <ul class="entry-list" id="entries"></ul>
+        </section>
+
+        <!-- Buttons at the bottom of the sidebar.
+             &nbsp; is a space that never breaks onto a new line. -->
+        <footer class="sidebar-foot">
+            <button type="button" class="btn btn-solid" id="add-fieldwork">+&nbsp; Add fieldwork</button>
+            <button type="button" class="btn" id="about">About</button>
+        </footer>
+    </aside>
+
+    <!-- =========================================================
+         ENTRY DETAIL PANEL
+         Takes the place of the sidebar when you click "Open entry".
+         "hidden" means it starts invisible. The JavaScript fills it in and shows it.
+         ========================================================= -->
+    <aside class="detail" id="detail" hidden></aside>
+
+    <!-- =========================================================
+         MAIN AREA: the map, plus everything floating on top of it
+         ========================================================= -->
+    <main class="main">
+
+        <!-- Mapbox draws the map inside this empty box -->
+        <div id="map"></div>
+
+        <!-- Top-left tabs: Map / Grid / Timeline.
+             "data-view" is a custom label the JavaScript reads to know which tab was clicked.
+             "is-active" is the class that makes the current tab white. -->
+        <nav class="tabs" id="view-tabs">
+            <button type="button" class="is-active" data-view="map">Map</button>
+            <button type="button" data-view="grid">Grid</button>
+            <button type="button" data-view="timeline">Timeline</button>
+        </nav>
+
+        <!-- Top-right map controls -->
+        <div class="map-controls">
+
+            <!-- Row 1: what the map shows -->
+            <div class="ctrl-row">
+                <button type="button" class="is-active" data-base="relief">Relief</button>
+                <button type="button" data-base="aerial">Aerial</button>
+                <button type="button" id="toggle-contours">Contours</button>
+            </div>
+
+            <!-- Row 2: navigation buttons. "title" is the tooltip shown when you hover. -->
+            <div class="ctrl-row">
+                <button type="button" id="toggle-3d" title="Toggle 3D">3D</button>
+                <button type="button" id="zoom-in" title="Zoom in">+</button>
+                <button type="button" id="zoom-out" title="Zoom out">&minus;</button>
+
+                <!-- Fullscreen icon, drawn as an SVG (a small vector drawing made of lines) -->
+                <button type="button" id="fullscreen" title="Fullscreen">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6">
+                        <path d="M3 8V3h5M16 3h5v5M21 16v5h-5M8 21H3v-5"/>
+                    </svg>
+                </button>
+
+                <!-- Compass: a circle with a needle. The JavaScript rotates it when the map rotates. -->
+                <button type="button" id="compass" title="Reset north">
+                    <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.4">
+                        <circle cx="12" cy="12" r="10.5"/>
+                        <line x1="12" y1="12" x2="12" y2="1.5" stroke-width="1.8"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- The Grid and Timeline views. Both start hidden and cover the map when shown. -->
+        <section class="view-panel" id="grid-view" hidden></section>
+        <section class="view-panel" id="timeline-view" hidden></section>
+
+        <!-- Bottom-right bar: elevation, coordinates and scale bar.
+             The JavaScript updates these as the mouse moves over the map. -->
+        <div class="statusbar">
+            <span id="st-elev">— m</span>
+            <span id="st-coords"></span>
+            <span class="scale"><span class="scale-bar" id="scale-bar"></span><span id="scale-label"></span></span>
+        </div>
+    </main>
+</div>
+
+<!-- =========================================================
+     POP-UP WINDOW used by the "About" and "Add fieldwork" buttons.
+     <dialog> is invisible until the JavaScript opens it.
+     ========================================================= -->
+<dialog class="dialog" id="dialog">
+    <!-- &times; is the × symbol. "data-close" tells the JavaScript that this button closes the window. -->
+    <button type="button" class="dialog-close" data-close>&times;</button>
+    <div id="dialog-body"></div>
+</dialog>
+
+<!-- Our own code. It loads last, so every element above already exists when it runs. -->
+<script src="js/app.js"></script>
+</body>
+</html>

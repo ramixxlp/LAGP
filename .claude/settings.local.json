@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node --check js/app.js)",
+      "Read(//Applications/**)",
+      "Read(//Users/rmsallam/Library/Caches/**)",
+      "Bash(python3 -m http.server 8765 --bind 127.0.0.1)",
+      "Bash(python3 -I /private/tmp/claude-503/-Users-rmsallam-Downloads-LAGP-WEBMAP-code/033de8cd-c0d8-4d57-ae2c-c49d6422e34e/scratchpad/cdp.py 9334 8766 /private/tmp/claude-503/-Users-rmsallam-Downloads-LAGP-WEBMAP-code/033de8cd-c0d8-4d57-ae2c-c49d6422e34e/scratchpad/x.png '\\(\\(\\)=>{const b=map.getBounds\\(\\);return {b:b.toArray\\(\\), h:map.getContainer\\(\\).clientHeight, out:state.filtered.filter\\(e=>!b.contains\\(e.coords\\)\\).map\\(e=>e.id+'\\\\'':'\\\\''+e.coords\\)}}\\)\\(\\)' 0)",
+      "Bash(python3 -I /private/tmp/claude-503/-Users-rmsallam-Downloads-LAGP-WEBMAP-code/033de8cd-c0d8-4d57-ae2c-c49d6422e34e/scratchpad/cdp.py 9334 8766 /private/tmp/claude-503/-Users-rmsallam-Downloads-LAGP-WEBMAP-code/033de8cd-c0d8-4d57-ae2c-c49d6422e34e/scratchpad/x.png 'location.reload\\(\\)' 12)",
+      "Bash(python3 -I /private/tmp/claude-503/-Users-rmsallam-Downloads-LAGP-WEBMAP-code/033de8cd-c0d8-4d57-ae2c-c49d6422e34e/scratchpad/cdp.py 9334 8766 /private/tmp/claude-503/-Users-rmsallam-Downloads-LAGP-WEBMAP-code/033de8cd-c0d8-4d57-ae2c-c49d6422e34e/scratchpad/shot-popup.png '\\(\\(\\)=>{document.querySelector\\('\\\\''#chips [data-type=Audio]'\\\\''\\).click\\(\\); const n1=document.querySelectorAll\\('\\\\''#entries .entry'\\\\''\\).length; document.querySelector\\('\\\\''#entries .entry'\\\\''\\).click\\(\\); return {title:document.title, audioOnly:n1, chips:[...document.querySelectorAll\\('\\\\''.chip'\\\\''\\)].map\\(c=>c.className.includes\\('\\\\''is-off'\\\\''\\)?'\\\\''off'\\\\'':'\\\\''on'\\\\''\\).join\\('\\\\'','\\\\''\\)}}\\)\\(\\)' 3)",
+      "Bash(python3 -I /private/tmp/claude-503/-Users-rmsallam-Downloads-LAGP-WEBMAP-code/033de8cd-c0d8-4d57-ae2c-c49d6422e34e/scratchpad/cdp.py 9334 8766 /private/tmp/claude-503/-Users-rmsallam-Downloads-LAGP-WEBMAP-code/033de8cd-c0d8-4d57-ae2c-c49d6422e34e/scratchpad/shot-detail.png '\\(\\(\\)=>{const t=document.title; document.querySelector\\('\\\\''#entries .entry'\\\\''\\).click\\(\\); document.querySelector\\('\\\\''.pop-open'\\\\''\\).click\\(\\); document.querySelector\\('\\\\''[data-act=next]'\\\\''\\).click\\(\\); return {t, pager:document.querySelector\\('\\\\''.pager span'\\\\''\\).textContent, h2:document.querySelector\\('\\\\''#detail h2'\\\\''\\).textContent}}\\)\\(\\)' 3)",
+      "Bash(python3 -I /private/tmp/claude-503/-Users-rmsallam-Downloads-LAGP-WEBMAP-code/033de8cd-c0d8-4d57-ae2c-c49d6422e34e/scratchpad/cdp.py 9334 8766 /private/tmp/claude-503/-Users-rmsallam-Downloads-LAGP-WEBMAP-code/033de8cd-c0d8-4d57-ae2c-c49d6422e34e/scratchpad/shot-grid.png '\\(\\(\\)=>{document.querySelector\\('\\\\''[data-act=close]'\\\\''\\).click\\(\\); document.querySelector\\('\\\\''[data-view=grid]'\\\\''\\).click\\(\\); return document.querySelectorAll\\('\\\\''.card'\\\\''\\).length}\\)\\(\\)' 1)",
+      "Bash(pkill -f \"chrome-prof\")",
+      "Bash(pkill -f \"http.server 876\")"
+    ]
+  }
+}

@@ -1,0 +1,881 @@
+/*
+    =====================================================================
+    STYLE.CSS — how the page looks
+    =====================================================================
+
+    HOW TO READ CSS
+    CSS is a list of "rules". Each rule says: find these elements → style them like this.
+
+        .sidebar {              ← the "selector": WHICH elements to style
+            width: 450px;       ← a "property: value;" pair: WHAT to change
+        }
+
+    Common selectors:
+        .name       → every element with class="name"
+        #name       → the one element with id="name"
+        .a .b       → elements with class "b" that sit INSIDE an element with class "a"
+        .a.b        → elements that have BOTH classes, "a" and "b"
+        .a:hover    → class "a", but only while the mouse is over it
+
+    Units:
+        px   → pixels (fixed size)
+        %    → a percentage of the parent element
+        vh   → a percentage of the window height (100vh = full height)
+        em   → relative to the text size
+        Colours like #fff are "hex" colours: #000 is black, #fff is white.
+
+    Text inside a comment block, like this one, is ignored by the browser.
+    A comment block opens with a slash and a star, and closes with a star
+    and a slash (see the first and last lines of this block).
+    =====================================================================
+*/
+
+
+/* ---------------------------------------------------------------------
+   1. FONT
+   Loads the Axo font from the fonts folder and names it 'Axo'.
+   --------------------------------------------------------------------- */
+
+@font-face {
+    font-family: 'Axo';
+    src: url('../fonts/Axo-Book.otf') format('opentype');   /* "../" means "go up one folder" (out of css/) */
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;    /* show a fallback font while Axo is still loading, instead of invisible text */
+}
+
+
+/* ---------------------------------------------------------------------
+   2. DESIGN SETTINGS (variables)
+   These are named values used throughout the file, written as var(--name).
+   Change a value here and it changes everywhere it's used.
+   --------------------------------------------------------------------- */
+
+:root {
+    --bg: #000;            /* background colour: black */
+    --fg: #fff;            /* text colour: white */
+    --muted: #9a9a9a;      /* grey, for less important text (dates, IDs) */
+    --line: #2e2e2e;       /* dark grey, for divider lines */
+
+    /* The font. If Axo can't load, the browser tries the next one in the list. */
+    --font: 'Axo', system-ui, -apple-system, 'Helvetica Neue', Arial, sans-serif;
+
+    --sidebar-w: 450px;    /* width of the left sidebar */
+    --detail-w: 680px;     /* width of the entry detail panel */
+}
+
+
+/* ---------------------------------------------------------------------
+   3. BASICS that apply to the whole page
+   --------------------------------------------------------------------- */
+
+/* "*" means every element. border-box makes widths include padding and borders,
+   which makes sizes much easier to predict. */
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;                          /* remove the browser's default white margin */
+    height: 100%;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font);
+    -webkit-font-smoothing: antialiased; /* smoother text on Mac */
+}
+
+/* Buttons and form fields don't use the page font by default, so we tell them to */
+button, input, select {
+    font: inherit;     /* "inherit" = copy the value from the parent element */
+    color: inherit;
+}
+
+/* Remove the browser's default button look (grey box), so we can design our own */
+button {
+    cursor: pointer;   /* show the hand cursor */
+    background: none;
+    border: 0;
+    padding: 0;
+}
+
+/* Anything with the "hidden" attribute is never shown */
+[hidden] {
+    display: none !important;   /* !important makes this win over any other rule */
+}
+
+/* The main layout: "flex" places the children side by side (sidebar | map) */
+.app {
+    display: flex;
+    height: 100vh;     /* fill the full window height */
+}
+
+
+/* ---------------------------------------------------------------------
+   4. LEFT SIDEBAR
+   --------------------------------------------------------------------- */
+
+.sidebar {
+    width: var(--sidebar-w);
+    flex: none;                 /* keep this exact width, don't shrink or grow */
+    display: flex;
+    flex-direction: column;     /* stack the children top to bottom */
+    border-right: 1px solid var(--line);
+    min-height: 0;              /* lets the entry list scroll inside the sidebar */
+}
+
+/* --- Logo and title --- */
+
+.brand {
+    display: flex;              /* logo and title side by side */
+    gap: 32px;                  /* space between them */
+    align-items: flex-start;    /* line them up along the top */
+    padding: 26px 38px 22px;    /* inner space: top, left & right, bottom */
+    border-bottom: 1px solid var(--line);
+}
+
+.brand-logo {
+    width: 132px;
+    height: 132px;
+    flex: none;
+}
+
+.brand h1 {
+    margin: -4px 0 0;           /* nudge up 4px to line up with the top of the logo */
+    font-weight: 400;           /* normal weight (headings are bold by default) */
+    font-size: 36px;
+    line-height: 1.08;          /* space between the two lines of the title */
+    letter-spacing: -0.01em;
+}
+
+/* --- Search and filters area --- */
+
+.filters {
+    padding: 22px 24px 32px;
+    border-bottom: 1px solid var(--line);
+}
+
+.search {
+    width: 100%;
+    background: transparent;
+    border: 1px solid #bbb;
+    padding: 12px 24px;
+    font-size: 19px;
+    outline: none;              /* remove the browser's blue glow when clicked */
+}
+
+.search::placeholder {          /* the grey hint text "Search places, authors, keywords" */
+    color: #6f6f6f;
+}
+
+.search:focus {                 /* while you're typing in it */
+    border-color: var(--fg);
+}
+
+/* Small capital headings, like "MATERIAL" and "15 ENTRIES IN VIEW" */
+.section-label {
+    display: flex;
+    justify-content: space-between;   /* push the label left and "show all" right */
+    align-items: baseline;
+    margin: 28px 2px 10px;
+    font-size: 13px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;        /* show the text in capitals */
+    color: #cfcfcf;
+}
+
+/* The "show all" button, styled as an underlined link */
+.link {
+    font-size: 13px;
+    letter-spacing: 0;
+    text-transform: none;
+    text-decoration: underline;
+    color: #cfcfcf;
+}
+
+.link:hover {
+    color: var(--fg);
+}
+
+/* --- Material buttons ("chips") --- */
+
+.chips {
+    display: flex;
+    flex-wrap: wrap;            /* move onto a new row when there's no more room */
+    gap: 13px;
+}
+
+.chip {
+    --c: #444;                  /* the chip's colour. The JavaScript sets the real one for each material. */
+    display: inline-flex;
+    align-items: baseline;
+    gap: 12px;                  /* space between the name and the number */
+    padding: 8px 10px;
+    font-size: 18px;
+    background: var(--c);
+    border: 1px solid var(--c);
+    transition: background .15s, color .15s, opacity .15s;   /* fade changes over 0.15 seconds */
+}
+
+.chip .count {                  /* the small number inside each chip */
+    font-size: 15px;
+    opacity: .75;               /* slightly see-through */
+}
+
+.chip.is-dark {                 /* dark text, for light colours like yellow */
+    color: #111;
+}
+
+.chip.is-off {                  /* a material that's switched off: outline only, grey text */
+    background: transparent;
+    color: #8a8a8a;
+}
+
+.chip:hover {
+    opacity: .85;
+}
+
+/* A chip that's only a label and can't be clicked (in the popup and detail panel) */
+.chip-static {
+    cursor: default;
+    font-size: 17px;
+    padding: 6px 10px;
+}
+
+/* --- Dropdown menus (Site / Year / Topic / Author / Scale) --- */
+
+.selects {
+    display: flex;
+    flex-wrap: wrap;            /* move onto a new row when there's no more room */
+    gap: 12px;
+    margin-top: 26px;
+}
+
+.select {
+    position: relative;         /* lets us place the ▼ arrow inside it (see .select::after) */
+    flex: 1 1 28%;              /* three per row, sharing the width; a last, shorter row stretches to fill it */
+    min-width: 0;               /* lets long names shrink instead of pushing the row wider */
+}
+
+.select select {
+    appearance: none;           /* hide the browser's own arrow, we draw our own */
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid #bbb;
+    padding: 9px 36px 9px 20px; /* top, right (room for the arrow), bottom, left */
+    font-size: 17px;
+    text-transform: uppercase;
+    cursor: pointer;
+    outline: none;
+}
+
+.select select:focus {
+    border-color: var(--fg);
+}
+
+.select select.has-value {      /* when a value is chosen, the menu turns white */
+    background: var(--fg);
+    color: var(--bg);
+}
+
+/* The ▼ arrow. It's an empty box with only one coloured border,
+   which the browser draws as a triangle. */
+.select::after {
+    content: '';
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    margin-top: -6px;
+    border: 8px solid transparent;
+    border-top: 12px solid currentColor;
+    border-bottom: 0;
+    pointer-events: none;       /* clicks go through the arrow to the menu underneath */
+}
+
+.select:has(select.has-value)::after {   /* black arrow when the menu is white */
+    color: var(--bg);
+}
+
+.select select option {         /* the items in the opened list */
+    background: var(--bg);
+    color: var(--fg);
+    text-transform: none;
+}
+
+/* --- List of entries in view --- */
+
+.entries {
+    flex: 1;                    /* take all the space left in the sidebar */
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 0 24px 0 26px;
+}
+
+.entries .section-label {
+    margin-top: 24px;
+}
+
+.entry-list {
+    list-style: none;           /* no bullet points */
+    margin: 0;
+    padding: 4px 0 12px;
+    overflow-y: auto;           /* scroll when the list is too long */
+    flex: 1;
+    scrollbar-width: thin;
+    scrollbar-color: #555 transparent;
+}
+
+/* One row in the list: coloured dot + title + date */
+.entry {
+    display: flex;
+    gap: 28px;
+    align-items: center;
+    padding: 12px 0;
+    cursor: pointer;
+}
+
+/* Underline the title on hover, and for the selected entry */
+.entry:hover .entry-title,
+.entry.is-selected .entry-title {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+/* The coloured circle */
+.dot {
+    width: 24px;
+    height: 24px;
+    flex: none;
+    border-radius: 50%;         /* 50% rounded corners turn a square into a circle */
+    background: var(--c);
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.55);   /* thin white outline, slightly see-through */
+}
+
+.entry-title {
+    font-size: 17px;
+    text-transform: uppercase;
+}
+
+/* The small grey "23.09.2026_ID1" line */
+.entry-meta, .meta {
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 0.02em;
+    margin-top: 2px;
+}
+
+/* Message shown when there's nothing to list */
+.empty {
+    color: var(--muted);
+    font-size: 15px;
+    padding: 12px 0;
+}
+
+/* --- Buttons at the bottom (Add fieldwork / About) --- */
+
+.sidebar-foot {
+    display: flex;
+    justify-content: space-between;   /* one button left, one right */
+    padding: 18px 24px;
+    border-top: 1px solid var(--line);
+}
+
+.btn {                          /* outlined button */
+    border: 1px solid var(--fg);
+    padding: 6px 20px;
+    font-size: 22px;
+}
+
+.btn:hover {
+    background: #1a1a1a;
+}
+
+.btn-solid {                    /* filled white button */
+    background: var(--fg);
+    color: var(--bg);
+}
+
+.btn-solid:hover {
+    background: #ddd;
+}
+
+
+/* ---------------------------------------------------------------------
+   5. ENTRY DETAIL PANEL (opens when you click "Open entry")
+   --------------------------------------------------------------------- */
+
+.detail {
+    width: var(--detail-w);
+    flex: none;
+    overflow-y: auto;           /* scroll if the content is taller than the window */
+    padding: 28px 30px 40px;
+    border-right: 1px solid var(--line);
+    scrollbar-width: thin;
+    scrollbar-color: #555 transparent;
+}
+
+/* While an entry is open, the JavaScript adds the class "detail-open" to <body>.
+   These two rules then hide the sidebar and the Map/Grid/Timeline tabs. */
+body.detail-open .sidebar {
+    display: none;
+}
+
+body.detail-open .tabs {
+    display: none;
+}
+
+/* Top row: "← back to map" on the left, "1/15 ◀ ▶" on the right */
+.detail-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.back {
+    font-size: 25px;
+    display: inline-flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.back:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+}
+
+.pager {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    color: var(--muted);
+}
+
+.pager span {                   /* the "1/15" counter */
+    margin-right: 10px;
+}
+
+.pager button {                 /* the ◀ ▶ buttons */
+    width: 38px;
+    height: 30px;
+    border: 1px solid #bbb;
+    display: grid;
+    place-items: center;        /* centre the arrow inside the button */
+}
+
+.pager button:hover {
+    background: #1a1a1a;
+}
+
+.detail .chip-static {
+    margin-top: 22px;
+}
+
+.detail h2 {                    /* the entry title */
+    font-size: 24px;
+    font-weight: 400;
+    text-transform: uppercase;
+    margin: 16px 0 2px;
+}
+
+/* The image box (or the "No media yet" placeholder) */
+.media {
+    margin: 22px 6px 0;
+    aspect-ratio: 4 / 3;        /* always 4 wide by 3 tall, whatever the width */
+    background: #111;
+    display: grid;
+    place-items: center;
+    color: #555;
+    font-size: 14px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    border: 1px solid var(--line);
+}
+
+.media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;          /* fill the box, cropping the edges if needed */
+}
+
+.media iframe {                 /* Google Drive's player, for audio, video and 3D files */
+    width: 100%;
+    height: 100%;
+    border: 0;
+}
+
+/* "Open original file ↗" under the media */
+.media-link {
+    display: inline-block;
+    margin: 10px 6px 0;
+    font-size: 13px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+
+.media-link:hover {
+    color: var(--fg);
+}
+
+/* The two-column grid of fields (Coordinates, ID, Date, Type…) */
+.fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;   /* two equal columns */
+    gap: 26px 0;                      /* 26px between rows, 0 between columns */
+    margin: 44px 6px 0;
+}
+
+/* The small capital labels: "COORDINATES", "GENERAL NOTES"… */
+.field dt, .notes h3 {
+    font-size: 13px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #cfcfcf;
+    font-weight: 400;
+    margin: 0 0 6px;
+}
+
+.field dd {                     /* the value under each label */
+    margin: 0;
+    font-size: 17px;
+    line-height: 1.3;
+}
+
+.notes {
+    margin: 34px 2px 0;
+}
+
+.notes p {
+    margin: 0;
+    font-size: 17px;
+    line-height: 1.35;
+    white-space: pre-wrap;      /* keep the line breaks written in the notes */
+}
+
+
+/* ---------------------------------------------------------------------
+   6. MAP AREA and everything that floats on top of it
+   --------------------------------------------------------------------- */
+
+.main {
+    position: relative;         /* things inside with "position: absolute" are placed relative to this box */
+    flex: 1;                    /* take all the width the sidebar doesn't use */
+    min-width: 0;
+}
+
+#map {
+    position: absolute;
+    inset: 0;                   /* stretch to all four edges (top, right, bottom, left = 0) */
+}
+
+/* Black background behind the tabs, the control rows and the status bar */
+.tabs, .ctrl-row, .statusbar {
+    background: var(--bg);
+}
+
+/* --- Top-left tabs (Map / Grid / Timeline) --- */
+
+.tabs {
+    position: absolute;
+    top: 32px;
+    left: 46px;
+    display: flex;
+    z-index: 3;                 /* stacking order: a higher number sits on top of lower ones */
+}
+
+.tabs button, .ctrl-row button {
+    padding: 8px 22px;
+    font-size: 18px;
+    min-height: 42px;
+}
+
+/* The active tab or control is white with black text */
+.tabs button.is-active, .ctrl-row button.is-active {
+    background: var(--fg);
+    color: var(--bg);
+}
+
+.tabs button:not(.is-active):hover, .ctrl-row button:not(.is-active):hover {
+    background: #1a1a1a;
+}
+
+/* --- Top-right controls --- */
+
+.map-controls {
+    position: absolute;
+    top: 32px;
+    right: 44px;
+    z-index: 3;
+}
+
+.ctrl-row {
+    display: flex;
+}
+
+.ctrl-row button {
+    padding: 8px 18px;
+    display: grid;
+    place-items: center;
+}
+
+#compass svg {
+    transition: transform .1s linear;   /* rotate the compass smoothly */
+}
+
+/* --- Bottom-right status bar --- */
+
+.statusbar {
+    position: absolute;
+    right: 22px;
+    bottom: 22px;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    padding: 10px 18px;
+    font-size: 16px;
+    font-variant-numeric: tabular-nums;   /* every digit the same width, so numbers don't jiggle */
+}
+
+.scale {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: 4px;
+}
+
+/* The scale bar: a box with no top border, so it looks like |____|.
+   The JavaScript sets its width. */
+.scale-bar {
+    display: inline-block;
+    height: 8px;
+    border: 1px solid #ccc;
+    border-top: 0;
+    transition: width .15s;
+}
+
+/* --- Dashed circle around the selected point --- */
+
+.ring {
+    width: 52px;
+    height: 52px;
+    border: 1.5px dashed rgba(255,255,255,.9);
+    border-radius: 50%;
+    pointer-events: none;       /* clicks pass through it to the map */
+}
+
+/* --- Popup that appears on the map when you click a point ---
+   The classes starting with "mapboxgl-" come from Mapbox.
+   Here we replace its default look (white box, rounded corners, little arrow). */
+
+.fw-popup .mapboxgl-popup-content {
+    background: var(--bg);
+    color: var(--fg);
+    padding: 0;
+    border-radius: 0;
+    box-shadow: none;
+    font-family: var(--font);
+}
+
+.fw-popup .mapboxgl-popup-tip {   /* the small arrow under the popup: hidden */
+    display: none;
+}
+
+.pop {
+    width: 295px;
+}
+
+.pop-body {
+    padding: 10px 12px 12px;
+    position: relative;
+}
+
+.pop-close {                    /* the × in the corner */
+    position: absolute;
+    top: 4px;
+    right: 10px;
+    font-size: 18px;
+    line-height: 1;
+}
+
+.pop-title {
+    font-size: 17px;
+    text-transform: uppercase;
+    margin-top: 14px;
+}
+
+.pop-foot {                     /* bottom strip: author name + "Open entry →" */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid var(--line);
+    padding: 8px 8px 10px;
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.pop-open {
+    color: var(--fg);
+    font-size: 17px;
+}
+
+.pop-open:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+/* Keep the Mapbox logo and credits under our own panels */
+.mapboxgl-ctrl-bottom-left {
+    z-index: 2;
+}
+
+
+/* ---------------------------------------------------------------------
+   7. GRID and TIMELINE views (they cover the map when their tab is active)
+   --------------------------------------------------------------------- */
+
+.view-panel {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    background: var(--bg);
+    overflow-y: auto;
+    padding: 110px 46px 90px;   /* extra space at the top so the tabs don't cover the content */
+}
+
+/* Grid of cards: as many columns as fit, each at least 220px wide */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 28px 22px;
+}
+
+.card {
+    text-align: left;
+}
+
+.card .media {
+    margin: 0 0 10px;
+    aspect-ratio: 4 / 3;
+    position: relative;
+    background: color-mix(in srgb, var(--c) 30%, #0b0b0b);   /* the material colour, darkened */
+    border-color: var(--c);
+    color: #ddd;
+}
+
+.card:hover .entry-title {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+/* Timeline: date on the left, that day's entries on the right */
+.tl-group {
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    gap: 20px;
+    padding: 18px 0;
+    border-top: 1px solid var(--line);
+}
+
+.tl-date {
+    font-size: 20px;
+}
+
+.tl-group .entry {
+    padding: 6px 0;
+}
+
+
+/* ---------------------------------------------------------------------
+   8. POP-UP WINDOW (About / Add fieldwork)
+   --------------------------------------------------------------------- */
+
+.dialog {
+    background: var(--bg);
+    color: var(--fg);
+    border: 1px solid #bbb;
+    padding: 34px 36px 30px;
+    max-width: 520px;
+    font-size: 17px;
+    line-height: 1.4;
+}
+
+.dialog::backdrop {             /* the dark layer behind the window */
+    background: rgba(0,0,0,.6);
+}
+
+.dialog h2 {
+    font-weight: 400;
+    margin: 0 0 12px;
+    font-size: 26px;
+}
+
+.dialog-close {
+    position: absolute;
+    top: 10px;
+    right: 16px;
+    font-size: 26px;
+}
+
+
+/* ---------------------------------------------------------------------
+   9. SMALL SCREENS (phones, narrow windows)
+   Everything inside this block only applies when the window is 900px wide or less.
+   The map goes on top and the sidebar moves underneath it.
+   --------------------------------------------------------------------- */
+
+@media (max-width: 900px) {
+    :root {
+        --sidebar-w: 100%;
+        --detail-w: 100%;
+    }
+
+    .app {
+        flex-direction: column-reverse;   /* stack vertically, with the map first */
+    }
+
+    .main {
+        flex: 1 1 55vh;
+        min-height: 55vh;                 /* the map takes at least 55% of the screen height */
+    }
+
+    .sidebar, .detail {
+        height: 45vh;
+        flex: none;
+        border-right: 0;
+        border-top: 1px solid var(--line);
+    }
+
+    .brand {
+        display: none;                    /* hide the big logo to save space */
+    }
+
+    .tabs {
+        top: 12px;
+        left: 12px;
+    }
+
+    .map-controls {
+        top: 12px;
+        right: 12px;
+    }
+
+    .tabs button, .ctrl-row button {
+        padding: 6px 12px;
+        font-size: 15px;
+        min-height: 36px;
+    }
+
+    .statusbar {
+        right: 10px;
+        bottom: 10px;
+        font-size: 13px;
+        gap: 12px;
+        padding: 6px 10px;
+    }
+
+    .view-panel {
+        padding: 70px 16px 60px;
+    }
+}
