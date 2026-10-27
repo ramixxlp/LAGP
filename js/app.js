@@ -566,7 +566,7 @@ function addTerrain() {
 }
 
 // Satellite imagery ("Aerial" button) and contour lines ("Contours" button).
-// Both are added hidden ("visibility: none") and switched on by the buttons.
+// The aerial layer starts hidden ("visibility: none"); the contours start visible. The buttons switch them.
 function addAerialAndContourLayers() {
 
     // Find the first layer of text labels in your style, so we can slide these
@@ -606,7 +606,7 @@ function addAerialAndContourLayers() {
         type: 'line',
         source: 'contours',
         'source-layer': 'contour',
-        layout: { visibility: 'none' },
+        layout: { visibility: 'visible' },   // on at start; the "Contours" button switches it off
         paint: {
             'line-color': '#ffffff',
             'line-opacity': ['match', ['get', 'index'], [5, 10], 0.6, 0.28],
@@ -622,7 +622,7 @@ function addAerialAndContourLayers() {
         'source-layer': 'contour',
         filter: ['match', ['get', 'index'], [5, 10], true, false],
         layout: {
-            visibility: 'none',
+            visibility: 'visible',
             'symbol-placement': 'line',                                // write the text along the line
             'text-field': ['concat', ['to-string', ['get', 'ele']], ' m'],   // "ele" = elevation
             'text-font': ['DIN Pro Regular', 'Arial Unicode MS Regular'],
